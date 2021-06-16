@@ -1,4 +1,4 @@
-module github.com/bjd145/customhandler
+module github.com/bjd145/azure-functions-custom-handler
 
 go 1.16
 
