@@ -2,37 +2,38 @@ package main
 
 import (
 	"encoding/json"
-	"time"
-	"os"
-	"net/http"
 	"fmt"
-	"log"
-	"runtime"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"log"
+	"net/http"
+	"os"
+	"runtime"
+	"time"
 )
 
 var version string = "v2"
 
 type OS struct {
-	Time string
-	Host string
-	OSType string
+	Time    string
+	Host    string
+	OSType  string
 	Version string
 }
 
-type newAPIHandler struct { }
+type newAPIHandler struct{}
+
 func (eh *newAPIHandler) getOperatingSystemHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	
+
 	host, _ := os.Hostname()
-	ostype := runtime.GOOS 
-	
-	msg := OS{ 
-		time.Now().Format(time.RFC850), 
-		host, 
+	ostype := runtime.GOOS
+
+	msg := OS{
+		time.Now().Format(time.RFC850),
+		host,
 		ostype,
-		version}	
+		version}
 
 	json.NewEncoder(w).Encode(msg)
 }
@@ -50,12 +51,12 @@ func main() {
 	apirouter.Methods("OPTIONS").Path("/os").HandlerFunc(handler.optionsHandler)
 
 	server := cors.Default().Handler(r)
-	
+
 	//Azure Functions sets FUNCTIONS_CUSTOMHANDLER_PORT to a integer value.  Must append :
-    listenAddr := ":8080"
-    if val, ok := os.LookupEnv("FUNCTIONS_CUSTOMHANDLER_PORT"); ok {
-        listenAddr = ":" + val
-    }
+	listenAddr := ":8080"
+	if val, ok := os.LookupEnv("FUNCTIONS_CUSTOMHANDLER_PORT"); ok {
+		listenAddr = ":" + val
+	}
 
 	fmt.Print("Listening on ", listenAddr)
 	log.Fatal(http.ListenAndServe(listenAddr, server))
